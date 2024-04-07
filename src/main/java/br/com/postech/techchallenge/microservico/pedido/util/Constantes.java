@@ -7,9 +7,9 @@ public class Constantes {
 	public static final String SERVER_NAME								= "TECH CHALLENGE - POS-TECH";
 	
 	public static final Object OBJECT_NULL								= null;
-	
-	public static final String ENUM_PACKAGE 							= "br.com.postech.software.architecture.techchallenge.domain.enums.";
-	public static final String ASSOCIACAO_TYPE 							= "br.com.postech.software.architecture.techchallenge.domain.enums.AssociacaoType";
+		
+	public static final String ENUM_PACKAGE 							= "br.com.postech.techchallenge.microservico.pedido.enums.";
+	public static final String ASSOCIACAO_TYPE 							= "br.com.postech.techchallenge.microservico.pedido.enums.AssociacaoType";
 	public static final String ENUM_CLASS_NAME 							= "enumClassName";
 		
 	public static final String MESSAGE_SUCCESS 							= "success";
