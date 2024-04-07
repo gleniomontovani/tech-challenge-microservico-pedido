@@ -3,8 +3,8 @@ package br.com.postech.techchallenge.microservico.pedido.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import br.com.postech.techchallenge.microservico.pedido.entity.Produto;
 import br.com.postech.techchallenge.microservico.pedido.enums.CategoriaEnum;
-import br.com.postech.techchallenge.microservico.pedido.model.Produto;
 
 import java.util.List;
 

@@ -3,8 +3,8 @@ package br.com.postech.techchallenge.microservico.pedido.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import br.com.postech.techchallenge.microservico.pedido.entity.Cliente;
 import br.com.postech.techchallenge.microservico.pedido.exception.PersistenceException;
-import br.com.postech.techchallenge.microservico.pedido.model.Cliente;
 
 import java.util.List;
 import java.util.Optional;

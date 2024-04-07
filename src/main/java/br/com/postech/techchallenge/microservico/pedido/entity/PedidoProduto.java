@@ -1,4 +1,4 @@
-package br.com.postech.techchallenge.microservico.pedido.model;
+package br.com.postech.techchallenge.microservico.pedido.entity;
 
 import java.io.Serializable;
 

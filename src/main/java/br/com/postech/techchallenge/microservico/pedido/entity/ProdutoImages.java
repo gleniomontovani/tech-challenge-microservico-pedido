@@ -1,4 +1,4 @@
-package br.com.postech.techchallenge.microservico.pedido.model;
+package br.com.postech.techchallenge.microservico.pedido.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
