@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: tech-challenge-microservico-pedido-config
+  labels:
+    app: tech-challenge-microservico-pedido
+data:
+  DATASOURCE_DB: pedidos
+  DATASOURCE_USERNAME: postgres

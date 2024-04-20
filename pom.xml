@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>br.com.postech</groupId>
 	<artifactId>techchallenge-microservico-pedido</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>techchallenge-microservico-pedido</name>
 	<description>Tech Challenge do Microserviço de Pedido</description>
 	<properties>

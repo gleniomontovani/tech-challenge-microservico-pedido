@@ -6,8 +6,13 @@ COPY src/ /app/src
 RUN mvn clean install -DskipTests
 
 
-FROM openjdk:17-alpine
-EXPOSE 8080
+FROM eclipse-temurin:17-jdk-alpine
+EXPOSE 8081
 COPY --from=build /app/target/techchallenge-microservico-pedido-1.0.0.jar techchallenge-microservico-pedido.jar
+
+ARG DB_ENDPOINT
+
+ENV DB_ENDPOINT=$DB_ENDPOINT
 ENV JAVA_APP_ARGS="--spring.config.location=/src/main/resources/application.properties"
+
 ENTRYPOINT ["java","-jar","techchallenge-microservico-pedido.jar", "$JAVA_APP_ARGS"]

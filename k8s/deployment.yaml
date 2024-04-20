@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tech-challenge-microservico-pedido
+  labels:
+    app: tech-challenge-microservico-pedido
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tech-challenge-microservico-pedido
+  template:
+    metadata:
+      labels:
+        app: tech-challenge-microservico-pedido
+    spec:
+      containers:
+        - name: tech-challenge-microservico-pedido
+          image: gleniomontovani/tech-challenge-microservico-pedido:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATASOURCE_URL
+              value: jdbc:postgresql://${DB_ENDPOINT}/pedidos
+            - name: DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: tech-challenge-microservico-pedido-config
+                  key: DATASOURCE_USERNAME  
+            - name: DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DATASOURCE_PASSWORD
+                  name: tech-challenge-microservico-pedido-secret            
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: dockerhub-secret
+                        

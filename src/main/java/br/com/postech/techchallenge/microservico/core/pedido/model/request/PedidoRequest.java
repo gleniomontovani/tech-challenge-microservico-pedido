@@ -1,0 +1,8 @@
+package br.com.postech.techchallenge.microservico.core.pedido.model.request;
+
+import java.util.List;
+
+public record PedidoRequest(Long numeroPedido, ClienteRequest cliente, String dataPedido, Integer statusPedido,
+		List<PedidoProduto> produtos) {
+
+}

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tech-challenge-microservico-pedido-service
+  labels:
+    app: tech-challenge-microservico-pedido
+spec:
+  selector:
+    app: tech-challenge-microservico-pedido
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
