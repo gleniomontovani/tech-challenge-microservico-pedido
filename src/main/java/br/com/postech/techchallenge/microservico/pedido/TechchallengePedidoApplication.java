@@ -11,5 +11,4 @@ public class TechchallengePedidoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TechchallengePedidoApplication.class, args);
 	}
-
 }

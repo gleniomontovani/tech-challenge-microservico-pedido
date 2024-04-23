@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import br.com.postech.techchallenge.microservico.pedido.comum.converts.CategoriaParaInteiroConverter;
 import br.com.postech.techchallenge.microservico.pedido.comum.enums.CategoriaEnum;
 import br.com.postech.techchallenge.microservico.pedido.configuration.ModelMapperConfiguration;
 import br.com.postech.techchallenge.microservico.pedido.entity.Produto;
@@ -55,12 +56,17 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public ProdutoResponse save(ProdutoRequest produtoRequest) {
+    public ProdutoResponse save(ProdutoRequest produtoRequest) {	
         var produto = MAPPER.map(produtoRequest, Produto.class);
-
+        produto.setCategoria(CategoriaEnum.get(produtoRequest.categoria()));
+        
         validateImagesProduto(produto);
         produto = produtoJpaRepository.save(produto);
 
+    	MAPPER.typeMap(Produto.class, ProdutoResponse.class)
+			.addMappings(mapperA -> mapperA.using(new CategoriaParaInteiroConverter())
+					.map(Produto::getCategoria, ProdutoResponse::setCategoria));
+        
         return MAPPER.map(produto, ProdutoResponse.class);
     }
 

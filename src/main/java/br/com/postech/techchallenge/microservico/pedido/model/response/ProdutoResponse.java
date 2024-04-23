@@ -3,6 +3,7 @@ package br.com.postech.techchallenge.microservico.pedido.model.response;
 import java.math.BigDecimal;
 import java.util.List;
 
+import br.com.postech.techchallenge.microservico.pedido.model.request.ProdutoImagem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +18,8 @@ public class ProdutoResponse {
 
 	private Long id;
     private String nome;
-    private String categoria;
+    private Integer categoria;
     private BigDecimal valor;
     private String descricao;
-    private List<String> imagens;
+    private List<ProdutoImagem> imagens;
 }

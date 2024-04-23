@@ -1,5 +1,6 @@
 package br.com.postech.techchallenge.microservico.pedido.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -11,16 +12,17 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.postech.techchallenge.microservico.pedido.comum.converts.InteiroParaStatusPedidoConverter;
 import br.com.postech.techchallenge.microservico.pedido.comum.converts.StatusPedidoParaInteiroConverter;
 import br.com.postech.techchallenge.microservico.pedido.comum.enums.StatusPedidoEnum;
 import br.com.postech.techchallenge.microservico.pedido.comum.util.CpfCnpjUtil;
 import br.com.postech.techchallenge.microservico.pedido.configuration.ModelMapperConfiguration;
 import br.com.postech.techchallenge.microservico.pedido.entity.Cliente;
 import br.com.postech.techchallenge.microservico.pedido.entity.Pedido;
+import br.com.postech.techchallenge.microservico.pedido.entity.PedidoProduto;
 import br.com.postech.techchallenge.microservico.pedido.entity.Produto;
 import br.com.postech.techchallenge.microservico.pedido.exception.BusinessException;
 import br.com.postech.techchallenge.microservico.pedido.exception.NotFoundException;
+import br.com.postech.techchallenge.microservico.pedido.model.request.PagamentoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
@@ -76,12 +78,8 @@ public class PedidoServiceImpl implements PedidoService {
 	@Override
 	public PedidoResponse fazerPedidoFake(PedidoRequest pedidoRequest) throws BusinessException {
 		//Obtem os dados do pedido
-		MAPPER.typeMap(PedidoRequest.class, Pedido.class)
-			.addMappings(mapperA -> mapperA
-					.using(new InteiroParaStatusPedidoConverter())
-						.map(PedidoRequest::statusPedido, Pedido::setStatusPedido));
-
 		Pedido pedido = MAPPER.map(pedidoRequest, Pedido.class);
+		pedido.setStatusPedido(StatusPedidoEnum.get(pedidoRequest.statusPedido()));
 		pedido.setDataPedido(LocalDateTime.now());
 		pedido.setStatusPedido(StatusPedidoEnum.RECEBIDO);
 
@@ -91,6 +89,18 @@ public class PedidoServiceImpl implements PedidoService {
 
 		//Salva o pedido e obtem seu numero
 		pedido = pedidoJpaRepository.save(pedido);
+		
+		//Obtem o valor total do pedido
+		BigDecimal valorPedido = pedido.getProdutos()
+				.stream()
+				.map(PedidoProduto::total)
+				.reduce((x, y) -> x.add(y))
+				.get();
+		
+		//Cria um registro de pagamento no banco como Pendente
+		PagamentoRequest pagamento = new PagamentoRequest(null, pedido.getId(), 1, valorPedido);
+		
+		pagamentoApiService.criarPagamento(pagamento);
 
 		MAPPER.typeMap(Pedido.class, PedidoResponse.class)
 		.addMappings(mapperA -> mapperA

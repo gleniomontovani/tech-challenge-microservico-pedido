@@ -1,7 +1,5 @@
 package br.com.postech.techchallenge.microservico.pedido.model.response;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +17,4 @@ public class PedidoResponse {
     private String dataPedido;
     private Integer statusPedido;
     private String statusPagamento;
-    private List<PedidoProduto> produtos;
 }

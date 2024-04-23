@@ -22,8 +22,7 @@ public class ProdutoController {
     private final ProdutoService produtoService;
 
     @PostMapping
-    public ResponseEntity<ProdutoResponse> salvar(@RequestBody @Valid ProdutoRequest produtoRequest) {
-    	
+    public ResponseEntity<ProdutoResponse> salvar(@RequestBody @Valid ProdutoRequest produtoRequest) {    	
         return new ResponseEntity<>(produtoService.save(produtoRequest), HttpStatus.OK);
     }
 

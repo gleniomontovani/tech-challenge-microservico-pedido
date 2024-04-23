@@ -1,6 +1,7 @@
 package br.com.postech.techchallenge.microservico.pedido.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,23 +23,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class PedidoProduto implements Serializable{
+public class PedidoProduto implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "pedido_id")
 	private Pedido pedido;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "produto_id")
 	private Produto produto;
-	
+
 	@Column(name = "quantidade")
 	private Integer quantidade;
-	
+
+	public BigDecimal total() {
+		return produto.getValor().multiply(BigDecimal.valueOf(quantidade));
+	}
+
 }
