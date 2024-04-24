@@ -1,21 +1,22 @@
 package br.com.postech.techchallenge.microservico.pedido.model.response;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PedidoResponse {
+public class PagamentoResponse {
 
+	private Long numeroPagamento;
 	private Long numeroPedido;
-    private ClienteResponse cliente;
-    private String dataPedido;
-    private Integer statusPedido;
-    private Integer statusPagamento;
-    private String qrCodePix;
+	private String dataPagamento;
+	private Integer statusPagamento;
+	private BigDecimal valor;
+	private String qrCodePix;
 }

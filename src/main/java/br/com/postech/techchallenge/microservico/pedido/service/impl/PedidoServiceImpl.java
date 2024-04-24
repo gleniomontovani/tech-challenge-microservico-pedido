@@ -24,6 +24,7 @@ import br.com.postech.techchallenge.microservico.pedido.exception.BusinessExcept
 import br.com.postech.techchallenge.microservico.pedido.exception.NotFoundException;
 import br.com.postech.techchallenge.microservico.pedido.model.request.PagamentoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoRequest;
+import br.com.postech.techchallenge.microservico.pedido.model.response.PagamentoResponse;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.PedidoJpaRepository;
@@ -100,7 +101,7 @@ public class PedidoServiceImpl implements PedidoService {
 		//Cria um registro de pagamento no banco como Pendente
 		PagamentoRequest pagamento = new PagamentoRequest(null, pedido.getId(), 1, valorPedido);
 		
-		pagamentoApiService.criarPagamento(pagamento);
+		PagamentoResponse response = pagamentoApiService.criarPagamento(pagamento);
 
 		MAPPER.typeMap(Pedido.class, PedidoResponse.class)
 		.addMappings(mapperA -> mapperA
@@ -110,7 +111,12 @@ public class PedidoServiceImpl implements PedidoService {
 			  mapper.map(src -> src.getId(),PedidoResponse::setNumeroPedido);
 		});
 
-		return MAPPER.map(pedido, PedidoResponse.class);
+		var pedidoResponse = MAPPER.map(pedido, PedidoResponse.class);
+		
+		pedidoResponse.setStatusPagamento(response.getStatusPagamento());
+		pedidoResponse.setQrCodePix(response.getQrCodePix());
+		
+		return pedidoResponse;
 	}
 
 	private void valideProduto(Pedido pedido)  throws BusinessException{
