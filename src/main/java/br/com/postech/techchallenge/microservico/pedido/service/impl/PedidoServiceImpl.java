@@ -66,9 +66,7 @@ public class PedidoServiceImpl implements PedidoService {
 	}
 
 	@Override
-	public PedidoResponse findById(Integer id) throws Exception{
-		pagamentoApiService.consultarPagamentoPorPedido(Long.valueOf(id));
-		
+	public PedidoResponse findById(Integer id) throws Exception{		
 		Pedido pedido = pedidoJpaRepository
 				.findById(id)
 				.orElseThrow(() -> new NotFoundException("Pedido não encontrado!"));

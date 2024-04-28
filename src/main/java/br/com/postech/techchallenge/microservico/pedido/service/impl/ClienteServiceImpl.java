@@ -3,13 +3,13 @@ package br.com.postech.techchallenge.microservico.pedido.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import br.com.postech.techchallenge.microservico.pedido.comum.util.CpfCnpjUtil;
 import br.com.postech.techchallenge.microservico.pedido.configuration.ModelMapperConfiguration;
 import br.com.postech.techchallenge.microservico.pedido.entity.Cliente;
+import br.com.postech.techchallenge.microservico.pedido.exception.BusinessException;
 import br.com.postech.techchallenge.microservico.pedido.model.request.ClienteRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.response.ClienteResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
@@ -17,8 +17,6 @@ import br.com.postech.techchallenge.microservico.pedido.service.ClienteService;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,18 +29,27 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public List<ClienteResponse> listarClientesAtivos() {
         List<Cliente> clientesAtivos = clienteJpaRepository.findByStatus(Boolean.TRUE);
-        return clientesAtivos.stream()
-                .map(cliente -> MAPPER.map(cliente, ClienteResponse.class))
-                .collect(Collectors.toList());
+        
+        MAPPER.typeMap(Cliente.class, ClienteResponse.class)
+		.addMappings(mapper -> {
+			  mapper.map(src -> src.getId(),ClienteResponse::setNumero);
+		});
+        
+        return MAPPER.map(clientesAtivos, new TypeToken<List<ClienteResponse>>() {}.getType());
     }
 
     @Override
     public ClienteResponse findById(Integer id) {
-        Optional<Cliente> cliente = clienteJpaRepository.findByIdAndStatus(id, Boolean.TRUE);
-        if (cliente.isPresent()) {
-            return MAPPER.map(cliente.get(), ClienteResponse.class);
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado");
+    	MAPPER.typeMap(Cliente.class, ClienteResponse.class)
+		.addMappings(mapper -> {
+			  mapper.map(src -> src.getId(),ClienteResponse::setNumero);
+		});
+    	
+        Cliente cliente = clienteJpaRepository
+        		.findByIdAndStatus(id, Boolean.TRUE)
+        		.orElseThrow(() -> new BusinessException("Cliente não encontrado!"));        
+          
+        return MAPPER.map(cliente, ClienteResponse.class);
     }
 
     @Override
@@ -55,6 +62,11 @@ public class ClienteServiceImpl implements ClienteService {
         cliente.setStatus(Boolean.TRUE);
         
         cliente = clienteJpaRepository.save(cliente);
+        
+        MAPPER.typeMap(Cliente.class, ClienteResponse.class)
+		.addMappings(mapper -> {
+			  mapper.map(src -> src.getId(),ClienteResponse::setNumero);
+		});
 
         return MAPPER.map(cliente, ClienteResponse.class);
     }
@@ -68,20 +80,22 @@ public class ClienteServiceImpl implements ClienteService {
                             cliente.setCpf(clienteRequest.cpf());
                             return clienteJpaRepository.save(cliente);
                         }
-                ).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
-
+                ).orElseThrow(() -> new BusinessException("Cliente não encontrado!"));
+        
+        MAPPER.typeMap(Cliente.class, ClienteResponse.class)
+		.addMappings(mapper -> {
+			  mapper.map(src -> src.getId(),ClienteResponse::setNumero);
+		});
+        
         return MAPPER.map(clienteMappado, ClienteResponse.class);
     }
 
     @Override
     public ClienteResponse desativarCliente(Integer id) {
-        Optional<Cliente> clienteOptional = clienteJpaRepository.findById(id);
+        Cliente cliente = clienteJpaRepository
+        		.findById(id)
+        		.orElseThrow(() -> new BusinessException("Cliente não encontrado!"));
 
-        if (!clienteOptional.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado");
-        }
-
-        Cliente cliente = clienteOptional.get();
         cliente.setStatus(Boolean.FALSE);
         cliente = clienteJpaRepository.save(cliente);
 

@@ -1,6 +1,7 @@
 package br.com.postech.techchallenge.microservico.pedido.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "cliente")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode

@@ -19,6 +19,14 @@ public class Constantes {
 	public static final String UNAUTHORIZED								= "unauthorized";
 	
     public static final String CLIENTE_ID 								= "4SOAT";
+    public static final String CLIENTE_CPF_1							= "27974558008";
+    public static final String CLIENTE_CPF_2							= "27269298009";
+    public static final String CLIENTE_EMAIL							= "example@gmail.com";
+    public static final String CLIENTE_NAME								= "Tech Challenge";
+    
+    public static final String PRODUTO_NOME								= "Coca-Cola";
+    public static final String PRODUTO_DESCRICAO						= "Refrigerante Coca-Cola";
+    
     public static final String SECRET_CLIENTE_ID 						= "123321a";
     public static final String SCOPE_READ 								= "read";
     public static final String SCOPE_WRITE 								= "write";

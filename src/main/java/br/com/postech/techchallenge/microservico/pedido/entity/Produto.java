@@ -2,6 +2,7 @@ package br.com.postech.techchallenge.microservico.pedido.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,12 +14,12 @@ import br.com.postech.techchallenge.microservico.pedido.comum.util.Constantes;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "produto")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -47,6 +48,6 @@ public class Produto implements Serializable {
     private List<ProdutoImages> imagens;
 
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<PedidoProduto> pedidos = new ArrayList<>();
+    private List<PedidoProduto> pedidos;
 
 }
