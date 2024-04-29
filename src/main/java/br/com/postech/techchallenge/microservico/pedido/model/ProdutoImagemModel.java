@@ -1,4 +1,4 @@
-package br.com.postech.techchallenge.microservico.pedido.model.request;
+package br.com.postech.techchallenge.microservico.pedido.model;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProdutoImagem {
+public class ProdutoImagemModel {
 
 	@NotNull(message = "É obrigatório informar o caminho da imagem.")
 	private String path;

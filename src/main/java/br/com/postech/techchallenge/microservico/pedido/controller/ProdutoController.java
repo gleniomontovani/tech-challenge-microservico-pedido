@@ -37,12 +37,12 @@ public class ProdutoController {
         return new ResponseEntity<>(produtoService.atualizar(id, produtoRequest), HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProdutoResponse>> listarProdutos(@RequestParam(required = false) Integer categoria) {
+    @GetMapping(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    public ResponseEntity<List<ProdutoResponse>> listarProdutos(@RequestParam(required = true) Integer categoria) {
         return new ResponseEntity<>(produtoService.findByCategoria(categoria), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     public ResponseEntity<ProdutoResponse> buscarProdutoPorId(@PathVariable Long id) {
         return new ResponseEntity<>(produtoService.findById(id), HttpStatus.OK);
     }

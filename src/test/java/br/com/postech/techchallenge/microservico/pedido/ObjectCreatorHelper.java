@@ -11,6 +11,7 @@ import br.com.postech.techchallenge.microservico.pedido.entity.Cliente;
 import br.com.postech.techchallenge.microservico.pedido.entity.Pedido;
 import br.com.postech.techchallenge.microservico.pedido.entity.Produto;
 import br.com.postech.techchallenge.microservico.pedido.model.request.ClienteRequest;
+import br.com.postech.techchallenge.microservico.pedido.model.request.ProdutoRequest;
 
 public class ObjectCreatorHelper {
 	
@@ -47,5 +48,13 @@ public class ObjectCreatorHelper {
 	
 	public static ClienteRequest obterClienteRequest() {
 		return new ClienteRequest(Constantes.CLIENTE_NAME, Constantes.CLIENTE_EMAIL, Constantes.CLIENTE_CPF_1, Constantes.SECRET_CLIENTE_ID);
+	}
+	
+	public static ProdutoRequest obterProdutoRequest() {
+		return new ProdutoRequest(1L, Constantes.PRODUTO_NOME, CategoriaEnum.BEBIDA.getValue(), BigDecimal.valueOf(100), Constantes.PRODUTO_DESCRICAO, new ArrayList<>());
+	}
+	
+	public static ProdutoRequest obterProdutoRequestSemImagens() {
+		return new ProdutoRequest(1L, Constantes.PRODUTO_NOME, CategoriaEnum.BEBIDA.getValue(), BigDecimal.valueOf(100), Constantes.PRODUTO_DESCRICAO, null);
 	}
 }

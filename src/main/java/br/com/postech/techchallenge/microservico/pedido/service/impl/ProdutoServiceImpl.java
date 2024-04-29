@@ -3,17 +3,14 @@ package br.com.postech.techchallenge.microservico.pedido.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import br.com.postech.techchallenge.microservico.pedido.comum.converts.CategoriaParaInteiroConverter;
 import br.com.postech.techchallenge.microservico.pedido.comum.enums.CategoriaEnum;
 import br.com.postech.techchallenge.microservico.pedido.configuration.ModelMapperConfiguration;
 import br.com.postech.techchallenge.microservico.pedido.entity.Produto;
 import br.com.postech.techchallenge.microservico.pedido.exception.BusinessException;
-import br.com.postech.techchallenge.microservico.pedido.exception.NotFoundException;
 import br.com.postech.techchallenge.microservico.pedido.model.request.ProdutoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.response.ProdutoResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ProdutoJpaRepository;
@@ -34,29 +31,30 @@ public class ProdutoServiceImpl implements ProdutoService {
     @Override
     public List<ProdutoResponse> findByCategoria(Integer idCategoria) {
     	CategoriaEnum categoria = CategoriaEnum.get(idCategoria);
-        if (Objects.nonNull(categoria)) {        	
-            return MAPPER.map(produtoJpaRepository.findByCategoria(categoria),
-                    new TypeToken<List<ProdutoResponse>>() {
-                    }.getType());
-        }
+    	MAPPER.typeMap(Produto.class, ProdutoResponse.class)
+		.addMappings(mapperA -> mapperA.using(new CategoriaParaInteiroConverter())
+				.map(Produto::getCategoria, ProdutoResponse::setCategoria));
 
-        return MAPPER.map(produtoJpaRepository.findAll(),
+        return MAPPER.map(produtoJpaRepository.findByCategoria(categoria),
                 new TypeToken<List<ProdutoResponse>>() {
                 }.getType());
     }
 
     @Override
     public ProdutoResponse findById(Long id) {
+    	MAPPER.typeMap(Produto.class, ProdutoResponse.class)
+		.addMappings(mapperA -> mapperA.using(new CategoriaParaInteiroConverter())
+				.map(Produto::getCategoria, ProdutoResponse::setCategoria));
+    	
         Produto produto = produtoJpaRepository
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException("Produto não encontrado."));
+                .orElseThrow(() -> new BusinessException("Produto não encontrado!"));
 
         return MAPPER.map(produto, ProdutoResponse.class);
-
     }
 
     @Override
-    public ProdutoResponse save(ProdutoRequest produtoRequest) {	
+    public ProdutoResponse save(ProdutoRequest produtoRequest) throws BusinessException {	
         var produto = MAPPER.map(produtoRequest, Produto.class);
         produto.setCategoria(CategoriaEnum.get(produtoRequest.categoria()));
         
@@ -77,15 +75,21 @@ public class ProdutoServiceImpl implements ProdutoService {
         validateImagesProduto(produto);
 
         produtoJpaRepository.findById(id).
-                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado!"));
+                orElseThrow(() -> new BusinessException("Produto não encontrado!"));
 
         produto = produtoJpaRepository.save(produto);
+        
+        MAPPER.typeMap(Produto.class, ProdutoResponse.class)
+		.addMappings(mapperA -> mapperA.using(new CategoriaParaInteiroConverter())
+				.map(Produto::getCategoria, ProdutoResponse::setCategoria));
 
         return MAPPER.map(produto, ProdutoResponse.class);
     }
 
     @Override
     public void deleteById(Long id) {
+		produtoJpaRepository.findById(id).orElseThrow(() -> new BusinessException("Produto não encontrado!"));
+    	
         produtoJpaRepository.deleteById(id);
     }
 
