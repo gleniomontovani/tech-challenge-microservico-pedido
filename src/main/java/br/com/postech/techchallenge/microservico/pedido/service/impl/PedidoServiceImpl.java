@@ -21,7 +21,6 @@ import br.com.postech.techchallenge.microservico.pedido.entity.Pedido;
 import br.com.postech.techchallenge.microservico.pedido.entity.PedidoProduto;
 import br.com.postech.techchallenge.microservico.pedido.entity.Produto;
 import br.com.postech.techchallenge.microservico.pedido.exception.BusinessException;
-import br.com.postech.techchallenge.microservico.pedido.exception.NotFoundException;
 import br.com.postech.techchallenge.microservico.pedido.model.request.PagamentoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PagamentoResponse;
@@ -66,10 +65,18 @@ public class PedidoServiceImpl implements PedidoService {
 	}
 
 	@Override
-	public PedidoResponse findById(Integer id) throws Exception{		
+	public PedidoResponse findById(Integer id) throws BusinessException{		
 		Pedido pedido = pedidoJpaRepository
 				.findById(id)
-				.orElseThrow(() -> new NotFoundException("Pedido não encontrado!"));
+				.orElseThrow(() -> new BusinessException("Pedido não encontrado!"));
+		
+		MAPPER.typeMap(Pedido.class, PedidoResponse.class)
+			.addMappings(mapperA -> mapperA
+					.using(new StatusPedidoParaInteiroConverter())
+						.map(Pedido::getStatusPedido, PedidoResponse::setStatusPedido))
+			.addMappings(mapperB -> {
+				  mapperB.map(src -> src.getId(),PedidoResponse::setNumeroPedido);
+		});
 
 		return MAPPER.map(pedido, PedidoResponse.class);
 	}
@@ -94,7 +101,7 @@ public class PedidoServiceImpl implements PedidoService {
 				.stream()
 				.map(PedidoProduto::total)
 				.reduce((x, y) -> x.add(y))
-				.get();
+				.orElse(BigDecimal.ZERO);
 		
 		//Cria um registro de pagamento no banco como Pendente
 		PagamentoRequest pagamento = new PagamentoRequest(null, pedido.getId(), 1, valorPedido);
@@ -144,11 +151,8 @@ public class PedidoServiceImpl implements PedidoService {
 			pedido.getCliente().setCpf(CpfCnpjUtil.removeMaskCPFCNPJ(pedido.getCliente().getCpf()));
 
 			Cliente cliente = clienteJpaRepository.findByCpfOrNomeOrEmail(pedido.getCliente().getCpf(),
-					pedido.getCliente().getNome(), pedido.getCliente().getEmail());
-
-			if(Objects.isNull(cliente)) {
-				throw new BusinessException("Cliente não encontrado!");
-			}
+					pedido.getCliente().getNome(), pedido.getCliente().getEmail())
+					.orElseThrow(() -> new BusinessException("Cliente não encontrado!"));
 
 			pedido.setCliente(cliente);
 		}

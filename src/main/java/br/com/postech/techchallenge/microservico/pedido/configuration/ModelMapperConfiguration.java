@@ -11,6 +11,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 import org.modelmapper.convention.MatchingStrategies;
 
+import br.com.postech.techchallenge.microservico.pedido.entity.Cliente;
+import br.com.postech.techchallenge.microservico.pedido.model.response.ClienteResponse;
+
 class NullableMapper extends ModelMapper{
 
 	@Override
@@ -37,7 +40,7 @@ public class ModelMapperConfiguration implements ContextResolver<ModelMapper> {
 		modelMapper.getConfiguration().setFieldMatchingEnabled(true);
 		modelMapper.getConfiguration().setFieldAccessLevel(AccessLevel.PRIVATE);
 		modelMapper.addConverter(converterStringToString());
-//		mapEntityToResponse(modelMapper);
+		mapEntityToResponse(modelMapper);
 		
 		return modelMapper;
 	}
@@ -50,11 +53,11 @@ public class ModelMapperConfiguration implements ContextResolver<ModelMapper> {
 		};
 	}
 	
-//	private static void mapEntityToResponse(final ModelMapper modelMapper) {
-//		modelMapper.createTypeMap(Cliente.class, ClienteResponse.class).addMappings(mapper -> {
-//			  mapper.map(src -> src.getId(), ClienteResponse::setNumero);
-//		});
-//	}
+	private static void mapEntityToResponse(final ModelMapper modelMapper) {
+		modelMapper.createTypeMap(Cliente.class, ClienteResponse.class).addMappings(mapper -> {
+			  mapper.map(src -> src.getId(), ClienteResponse::setNumero);
+		});
+	}
 	
 	public static <S, D> Converter <S, D> converterWithDestinationSupplier(Supplier<? extends D> supplier) {
 	    return ctx -> ctx.getMappingEngine().map(ctx.create(ctx.getSource(), supplier.get()));

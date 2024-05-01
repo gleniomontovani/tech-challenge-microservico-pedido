@@ -114,17 +114,20 @@ class ClienteJpaRepositoryTest {
 		cliente.setId(1L);
 		cliente.setCpf(Constantes.CLIENTE_CPF_1);
 		
-		when(clienteJpaRepository.findByCpfOrNomeOrEmail(anyString(), anyString(), anyString())).thenReturn(cliente);
+		when(clienteJpaRepository.findByCpfOrNomeOrEmail(anyString(), anyString(), anyString())).thenReturn(Optional.of(cliente));
 		
-		var clienteEncontrado = clienteJpaRepository.findByCpfOrNomeOrEmail(Constantes.CLIENTE_CPF_1,
+		var clienteOptional = clienteJpaRepository.findByCpfOrNomeOrEmail(Constantes.CLIENTE_CPF_1,
 				Constantes.CLIENTE_NAME, Constantes.CLIENTE_EMAIL);
 		
-		assertThat(clienteEncontrado).isNotNull().isInstanceOf(Cliente.class);
-		assertThat(clienteEncontrado.getId()).isEqualTo(cliente.getId());
-		assertThat(clienteEncontrado.getCpf()).isEqualTo(cliente.getCpf());
-		assertThat(clienteEncontrado.getEmail()).isEqualTo(cliente.getEmail());
-		assertThat(clienteEncontrado.getNome()).isEqualTo(cliente.getNome());
-		assertThat(clienteEncontrado.getSenha()).isEqualTo(cliente.getSenha());
+		assertThat(clienteOptional).isPresent().contains(cliente);
+		
+		clienteOptional.ifPresent(clienteEncontrado -> {
+			assertThat(clienteEncontrado.getId()).isEqualTo(cliente.getId());
+			assertThat(clienteEncontrado.getCpf()).isEqualTo(cliente.getCpf());
+			assertThat(clienteEncontrado.getEmail()).isEqualTo(cliente.getEmail());
+			assertThat(clienteEncontrado.getNome()).isEqualTo(cliente.getNome());
+			assertThat(clienteEncontrado.getSenha()).isEqualTo(cliente.getSenha());
+		});		
 				
 		verify(clienteJpaRepository, times(1)).findByCpfOrNomeOrEmail(anyString(), anyString(), anyString());
 	}

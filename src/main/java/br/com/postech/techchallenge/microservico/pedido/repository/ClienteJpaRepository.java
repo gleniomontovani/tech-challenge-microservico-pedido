@@ -18,5 +18,5 @@ public interface ClienteJpaRepository extends JpaRepository<Cliente, Integer> {
 
     Optional<Cliente> findById(Integer id);
 
-    Cliente findByCpfOrNomeOrEmail(String cpf, String nome, String email) throws PersistenceException;
+    Optional<Cliente> findByCpfOrNomeOrEmail(String cpf, String nome, String email) throws PersistenceException;
 }
