@@ -33,8 +33,7 @@ public class ClienteController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    public ResponseEntity<ClienteResponse> salvarCliente(@RequestBody @Valid ClienteRequest clienteRequest) throws Exception {
-        
+    public ResponseEntity<ClienteResponse> salvarCliente(@RequestBody @Valid ClienteRequest clienteRequest) throws Exception {       
         return new ResponseEntity<>(clienteService.save(clienteRequest), HttpStatus.CREATED);
     }
 

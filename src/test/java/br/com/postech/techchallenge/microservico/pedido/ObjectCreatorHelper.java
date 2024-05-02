@@ -16,6 +16,7 @@ import br.com.postech.techchallenge.microservico.pedido.model.request.ClienteReq
 import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoProdutoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.request.ProdutoRequest;
+import br.com.postech.techchallenge.microservico.pedido.model.response.ClienteResponse;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PagamentoResponse;
 
 public class ObjectCreatorHelper {
@@ -78,6 +79,14 @@ public class ObjectCreatorHelper {
 	
 	public static PagamentoResponse obterPagamentoResponse() {
 		return new PagamentoResponse(1L, 1L, LocalDateTime.now().toString(), StatusPagamentoEnum.PENDENTE.getValue(), BigDecimal.valueOf(100), null);
+	}
+	
+	public static ClienteResponse obterClienteResponse() {
+		return ClienteResponse.builder()
+				.email(Constantes.CLIENTE_EMAIL)
+				.nome(Constantes.CLIENTE_NAME)
+				.status(Boolean.TRUE)
+				.build();
 	}
 	
 	private static PedidoProdutoRequest obterPedidoProdutoRequest() {
