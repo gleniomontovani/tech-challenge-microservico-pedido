@@ -18,6 +18,8 @@ import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoRequ
 import br.com.postech.techchallenge.microservico.pedido.model.request.ProdutoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.response.ClienteResponse;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PagamentoResponse;
+import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoResponse;
+import br.com.postech.techchallenge.microservico.pedido.model.response.ProdutoResponse;
 
 public class ObjectCreatorHelper {
 	
@@ -30,6 +32,18 @@ public class ObjectCreatorHelper {
 				.build();
 	}
 	
+	public static ClienteRequest obterClienteRequest() {
+		return new ClienteRequest(Constantes.CLIENTE_NAME, Constantes.CLIENTE_EMAIL, Constantes.CLIENTE_CPF_1, Constantes.SECRET_CLIENTE_ID);
+	}
+	
+	public static ClienteResponse obterClienteResponse() {
+		return ClienteResponse.builder()
+				.email(Constantes.CLIENTE_EMAIL)
+				.nome(Constantes.CLIENTE_NAME)
+				.status(Boolean.TRUE)
+				.build();
+	}
+		
 	public static Produto obterProduto() {
 		return Produto.builder()
 				.categoria(CategoriaEnum.BEBIDA)
@@ -41,6 +55,24 @@ public class ObjectCreatorHelper {
 				.build();
 	}
 	
+	public static ProdutoRequest obterProdutoRequest() {
+		return new ProdutoRequest(1L, Constantes.PRODUTO_NOME, CategoriaEnum.BEBIDA.getValue(), BigDecimal.valueOf(100), Constantes.PRODUTO_DESCRICAO, new ArrayList<>());
+	}
+	
+	public static ProdutoResponse obterProdutoResponse() {
+		return ProdutoResponse.builder()
+				.nome(Constantes.PRODUTO_NOME)
+				.categoria(CategoriaEnum.BEBIDA.getValue())
+				.descricao(Constantes.PRODUTO_DESCRICAO)
+				.valor(BigDecimal.valueOf(100))
+				.imagens(new ArrayList<>())
+				.build();
+	}
+	
+	public static ProdutoRequest obterProdutoRequestSemImagens() {
+		return new ProdutoRequest(1L, Constantes.PRODUTO_NOME, CategoriaEnum.BEBIDA.getValue(), BigDecimal.valueOf(100), Constantes.PRODUTO_DESCRICAO, null);
+	}	
+	
 	public static Pedido obterPedido() {
 		var cliente = obterCliente();
 		cliente.setId(1L);
@@ -51,18 +83,6 @@ public class ObjectCreatorHelper {
 				.statusPedido(StatusPedidoEnum.RECEBIDO)
 				.produtos(new ArrayList<>())
 				.build();
-	}
-	
-	public static ClienteRequest obterClienteRequest() {
-		return new ClienteRequest(Constantes.CLIENTE_NAME, Constantes.CLIENTE_EMAIL, Constantes.CLIENTE_CPF_1, Constantes.SECRET_CLIENTE_ID);
-	}
-	
-	public static ProdutoRequest obterProdutoRequest() {
-		return new ProdutoRequest(1L, Constantes.PRODUTO_NOME, CategoriaEnum.BEBIDA.getValue(), BigDecimal.valueOf(100), Constantes.PRODUTO_DESCRICAO, new ArrayList<>());
-	}
-	
-	public static ProdutoRequest obterProdutoRequestSemImagens() {
-		return new ProdutoRequest(1L, Constantes.PRODUTO_NOME, CategoriaEnum.BEBIDA.getValue(), BigDecimal.valueOf(100), Constantes.PRODUTO_DESCRICAO, null);
 	}
 	
 	public static PedidoRequest obterPedidoRequest() {		
@@ -77,18 +97,19 @@ public class ObjectCreatorHelper {
 		return new PedidoRequest(1L, obterClienteRequest(), LocalDateTime.now().toString(), StatusPedidoEnum.RECEBIDO.getValue(), null);
 	}
 	
-	public static PagamentoResponse obterPagamentoResponse() {
-		return new PagamentoResponse(1L, 1L, LocalDateTime.now().toString(), StatusPagamentoEnum.PENDENTE.getValue(), BigDecimal.valueOf(100), null);
-	}
-	
-	public static ClienteResponse obterClienteResponse() {
-		return ClienteResponse.builder()
-				.email(Constantes.CLIENTE_EMAIL)
-				.nome(Constantes.CLIENTE_NAME)
-				.status(Boolean.TRUE)
+	public static PedidoResponse obterPedidoResponse() {
+		return PedidoResponse.builder()
+				.cliente(obterClienteResponse())
+				.dataPedido(LocalDateTime.now().toString())
+				.statusPedido(StatusPedidoEnum.RECEBIDO.getValue())
+				.statusPagamento(StatusPagamentoEnum.PENDENTE.getValue())
 				.build();
 	}
 	
+	public static PagamentoResponse obterPagamentoResponse() {
+		return new PagamentoResponse(1L, 1L, LocalDateTime.now().toString(), StatusPagamentoEnum.PENDENTE.getValue(), BigDecimal.valueOf(100), null);
+	}
+			
 	private static PedidoProdutoRequest obterPedidoProdutoRequest() {
 		return new PedidoProdutoRequest(obterProdutoRequest(), 10);
 	}

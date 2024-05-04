@@ -43,8 +43,8 @@ class ClienteControllerTest {
 	@BeforeEach
 	void setUp() {
 		openMocks = MockitoAnnotations.openMocks(this);
-		ClienteController pagamentoController = new ClienteController(clienteService);
-		mockMvc = MockMvcBuilders.standaloneSetup(pagamentoController)
+		ClienteController clienteController = new ClienteController(clienteService);
+		mockMvc = MockMvcBuilders.standaloneSetup(clienteController)
 		        .setControllerAdvice(new RestHandlerException())
 		        .addFilter((request, response, chain) -> {
 		          response.setCharacterEncoding(Constantes.UTF_8);
@@ -151,7 +151,7 @@ class ClienteControllerTest {
 	}
 
 	@Test
-	void testDesativarCliente() throws Exception {
+	void devePermitirDesativarCliente() throws Exception {
 		var clienteRequest = ObjectCreatorHelper.obterClienteRequest();
 		
 		var clienteResponse = ObjectCreatorHelper.obterClienteResponse();

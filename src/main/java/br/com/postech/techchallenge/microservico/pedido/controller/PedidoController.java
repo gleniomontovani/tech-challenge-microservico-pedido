@@ -21,7 +21,6 @@ import java.util.List;
 @RequestMapping("/v1/pedidos")
 @RequiredArgsConstructor
 public class PedidoController {
-
     private final PedidoService pedidoService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON)

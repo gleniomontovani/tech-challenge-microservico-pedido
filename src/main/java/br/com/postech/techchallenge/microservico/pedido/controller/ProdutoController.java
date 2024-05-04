@@ -23,7 +23,7 @@ public class ProdutoController {
 
     @PostMapping
     public ResponseEntity<ProdutoResponse> salvar(@RequestBody @Valid ProdutoRequest produtoRequest) {    	
-        return new ResponseEntity<>(produtoService.save(produtoRequest), HttpStatus.OK);
+        return new ResponseEntity<>(produtoService.save(produtoRequest), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -38,7 +38,7 @@ public class ProdutoController {
     }
 
     @GetMapping(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    public ResponseEntity<List<ProdutoResponse>> listarProdutos(@RequestParam(required = true) Integer categoria) {
+    public ResponseEntity<List<ProdutoResponse>> listarProdutos(@RequestParam(required = false) Integer categoria) {
         return new ResponseEntity<>(produtoService.findByCategoria(categoria), HttpStatus.OK);
     }
 
