@@ -1,6 +1,5 @@
 package br.com.postech.techchallenge.microservico.pedido.model.response;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PedidoProduto {
+public class PedidoProdutoResponse {
 
 	private ProdutoResponse produto;
-    @NotNull(message = "A quantidade é obrigatório.")
     private Integer quantidade;
 }

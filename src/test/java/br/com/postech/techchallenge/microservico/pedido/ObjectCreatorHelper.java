@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import br.com.postech.techchallenge.microservico.pedido.comum.enums.CategoriaEnum;
-import br.com.postech.techchallenge.microservico.pedido.comum.enums.StatusPagamentoEnum;
 import br.com.postech.techchallenge.microservico.pedido.comum.enums.StatusPedidoEnum;
 import br.com.postech.techchallenge.microservico.pedido.comum.util.Constantes;
 import br.com.postech.techchallenge.microservico.pedido.entity.Cliente;
@@ -102,12 +101,12 @@ public class ObjectCreatorHelper {
 				.cliente(obterClienteResponse())
 				.dataPedido(LocalDateTime.now().toString())
 				.statusPedido(StatusPedidoEnum.RECEBIDO.getValue())
-				.statusPagamento(StatusPagamentoEnum.PENDENTE.getValue())
+				.statusPagamento(1)
 				.build();
 	}
 	
 	public static PagamentoResponse obterPagamentoResponse() {
-		return new PagamentoResponse(1L, 1L, LocalDateTime.now().toString(), StatusPagamentoEnum.PENDENTE.getValue(), BigDecimal.valueOf(100), null);
+		return new PagamentoResponse(1L, 1L, LocalDateTime.now().toString(), 1, BigDecimal.valueOf(100), null);
 	}
 			
 	private static PedidoProdutoRequest obterPedidoProdutoRequest() {

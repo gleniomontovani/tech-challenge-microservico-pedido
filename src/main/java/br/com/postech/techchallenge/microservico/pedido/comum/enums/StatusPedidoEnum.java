@@ -4,9 +4,11 @@ public enum StatusPedidoEnum implements APIEnum{
 
 	DESCONHECIDO(0, "Desconhecido"),
 	RECEBIDO(1, "Recebido"),
-	EM_PREPARACAO(2, "Em preparação"),
-	PRONTO(3, "Pronto"),
-	FINALIZADO(4, "Finalizado");
+	AGUARDANDO_PAGAMENTO(2, "Aguardando Pagamento"),
+	PAGO(3, "Pago"),
+	EM_PREPARACAO(4, "Em preparação"),
+	PRONTO(5, "Pronto"),
+	ENTREGUE(6, "Entregue");
 	
 	private Integer value;
 	private String descricao;

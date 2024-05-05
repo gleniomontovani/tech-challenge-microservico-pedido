@@ -13,7 +13,7 @@ import br.com.postech.techchallenge.microservico.pedido.model.response.Pagamento
 import feign.Headers;
 
 @FeignClient(url = "${api.client.pagamento.uri}", path = ControllerMappingConfig.PATH_API_PAGAMENTO, name = "pagamentos")
-public interface PagamentoApiService {
+public interface ApiMicroServicePagamento {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{numeroPedido}")
 	@Headers("Accept: application/json")

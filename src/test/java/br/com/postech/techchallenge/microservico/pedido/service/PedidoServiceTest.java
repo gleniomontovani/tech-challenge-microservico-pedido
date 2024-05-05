@@ -28,7 +28,7 @@ import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRep
 import br.com.postech.techchallenge.microservico.pedido.repository.PedidoJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.ProdutoJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.service.impl.PedidoServiceImpl;
-import br.com.postech.techchallenge.microservico.pedido.service.integracao.PagamentoApiService;
+import br.com.postech.techchallenge.microservico.pedido.service.integracao.ApiMicroServicePagamento;
 
 class PedidoServiceTest {
 	
@@ -40,7 +40,7 @@ class PedidoServiceTest {
 	@Mock
 	private ProdutoJpaRepository produtoJpaRepository;
 	@Mock
-	private PagamentoApiService pagamentoApiService;
+	private ApiMicroServicePagamento pagamentoApiService;
 
 	AutoCloseable openMocks;
 	

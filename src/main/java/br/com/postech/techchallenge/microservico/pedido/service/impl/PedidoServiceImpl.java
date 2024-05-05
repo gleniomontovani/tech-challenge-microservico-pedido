@@ -24,12 +24,13 @@ import br.com.postech.techchallenge.microservico.pedido.exception.BusinessExcept
 import br.com.postech.techchallenge.microservico.pedido.model.request.PagamentoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PagamentoResponse;
+import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoProdutoResponse;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.PedidoJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.ProdutoJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.service.PedidoService;
-import br.com.postech.techchallenge.microservico.pedido.service.integracao.PagamentoApiService;
+import br.com.postech.techchallenge.microservico.pedido.service.integracao.ApiMicroServicePagamento;
 import lombok.RequiredArgsConstructor;
 
 
@@ -42,7 +43,7 @@ public class PedidoServiceImpl implements PedidoService {
 	private final PedidoJpaRepository pedidoJpaRepository;
 	private final ClienteJpaRepository clienteJpaRepository;
 	private final ProdutoJpaRepository produtoJpaRepository;
-	private final PagamentoApiService pagamentoApiService;
+	private final ApiMicroServicePagamento apiMicroServicePagamento;
 
 	@Override
 	public List<PedidoResponse> findTodosPedidosAtivos()throws BusinessException{
@@ -50,7 +51,7 @@ public class PedidoServiceImpl implements PedidoService {
 				.findByStatusPedidoNotIn(
 						Arrays.asList(
 								StatusPedidoEnum.PRONTO,
-								StatusPedidoEnum.FINALIZADO)
+								StatusPedidoEnum.ENTREGUE)
 				);
 
 		MAPPER.typeMap(Pedido.class, PedidoResponse.class)
@@ -80,6 +81,15 @@ public class PedidoServiceImpl implements PedidoService {
 
 		return MAPPER.map(pedido, PedidoResponse.class);
 	}
+	
+	@Override
+	public List<PedidoProdutoResponse> findProdutosByPedido(Integer numeroPedido) throws BusinessException {
+		Pedido pedido = pedidoJpaRepository
+				.findById(numeroPedido)
+				.orElseThrow(() -> new BusinessException("Pedido não encontrado!"));		
+		
+		return MAPPER.map(pedido.getProdutos(), new TypeToken<List<PedidoProdutoResponse>>() {}.getType());
+	}
 
 	@Override
 	public PedidoResponse fazerPedidoFake(PedidoRequest pedidoRequest) throws BusinessException {
@@ -106,7 +116,7 @@ public class PedidoServiceImpl implements PedidoService {
 		//Cria um registro de pagamento no banco como Pendente
 		PagamentoRequest pagamento = new PagamentoRequest(null, pedido.getId(), 1, valorPedido);
 		
-		PagamentoResponse response = pagamentoApiService.criarPagamento(pagamento);
+		PagamentoResponse response = apiMicroServicePagamento.criarPagamento(pagamento);
 
 		MAPPER.typeMap(Pedido.class, PedidoResponse.class)
 		.addMappings(mapperA -> mapperA
@@ -122,6 +132,26 @@ public class PedidoServiceImpl implements PedidoService {
 		pedidoResponse.setQrCodePix(response.getQrCodePix());
 		
 		return pedidoResponse;
+	}
+	
+	@Override
+	public PedidoResponse atualizarPedido(PedidoRequest pedidoRequest) throws BusinessException {
+		Pedido pedido = pedidoJpaRepository
+				.findById(pedidoRequest.numeroPedido().intValue())
+				.orElseThrow(() -> new BusinessException("Pedido não encontrado!"));	
+		
+		pedido.setStatusPedido(StatusPedidoEnum.get(pedidoRequest.statusPedido()));
+		pedido = pedidoJpaRepository.save(pedido);
+		
+		MAPPER.typeMap(Pedido.class, PedidoResponse.class)
+			.addMappings(mapperA -> mapperA
+					.using(new StatusPedidoParaInteiroConverter())
+						.map(Pedido::getStatusPedido, PedidoResponse::setStatusPedido))
+			.addMappings(mapper -> {
+				  mapper.map(src -> src.getId(),PedidoResponse::setNumeroPedido);
+		});
+		
+		return MAPPER.map(pedido, PedidoResponse.class);
 	}
 
 	private void valideProduto(Pedido pedido)  throws BusinessException{
@@ -157,5 +187,4 @@ public class PedidoServiceImpl implements PedidoService {
 			pedido.setCliente(cliente);
 		}
 	}
-
 }

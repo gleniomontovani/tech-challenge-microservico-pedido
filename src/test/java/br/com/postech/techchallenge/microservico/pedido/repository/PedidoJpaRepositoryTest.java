@@ -49,7 +49,7 @@ class PedidoJpaRepositoryTest {
 		when(pedidoJpaRepository.findByStatusPedidoNotIn(anyList())).thenReturn(pedidos);
 
 		var lista = pedidoJpaRepository
-				.findByStatusPedidoNotIn(Arrays.asList(StatusPedidoEnum.PRONTO, StatusPedidoEnum.FINALIZADO));
+				.findByStatusPedidoNotIn(Arrays.asList(StatusPedidoEnum.PRONTO, StatusPedidoEnum.ENTREGUE));
 		
 		assertThat(lista).hasSize(2).containsExactlyInAnyOrder(pedidoModel1, pedidoModel2);
 		
