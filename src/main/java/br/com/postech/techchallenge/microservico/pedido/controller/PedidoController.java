@@ -48,7 +48,5 @@ public class PedidoController {
     @PutMapping(produces = MediaType.APPLICATION_JSON)
     public ResponseEntity<PedidoResponse> atualizarPedido(@RequestBody PedidoRequest pedidoRequest) throws Exception {
         return new ResponseEntity<>(pedidoService.atualizarPedido(pedidoRequest), HttpStatus.OK);
-    }
-    
-
+    }   
 }

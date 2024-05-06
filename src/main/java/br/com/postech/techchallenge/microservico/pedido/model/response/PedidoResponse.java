@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class PedidoResponse {
 
 	private Long numeroPedido;
+	private Long numeroPagamento;
     private ClienteResponse cliente;
     private String dataPedido;
     private Integer statusPedido;

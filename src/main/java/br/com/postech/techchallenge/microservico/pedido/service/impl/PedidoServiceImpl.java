@@ -97,7 +97,7 @@ public class PedidoServiceImpl implements PedidoService {
 		Pedido pedido = MAPPER.map(pedidoRequest, Pedido.class);
 		pedido.setStatusPedido(StatusPedidoEnum.get(pedidoRequest.statusPedido()));
 		pedido.setDataPedido(LocalDateTime.now());
-		pedido.setStatusPedido(StatusPedidoEnum.RECEBIDO);
+		pedido.setStatusPedido(StatusPedidoEnum.AGUARDANDO_PAGAMENTO);
 
 		valideCliente(pedido);
 
@@ -128,6 +128,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 		var pedidoResponse = MAPPER.map(pedido, PedidoResponse.class);
 		
+		pedidoResponse.setNumeroPagamento(response.getNumeroPagamento());
 		pedidoResponse.setStatusPagamento(response.getStatusPagamento());
 		pedidoResponse.setQrCodePix(response.getQrCodePix());
 		
