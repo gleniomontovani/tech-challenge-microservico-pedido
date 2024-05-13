@@ -147,6 +147,29 @@ class PedidoServiceTest {
 	}
 	
 	@Test
+	void devePerimitirAtualizarPedido() {
+		var pedidoRequestModel = ObjectCreatorHelper.obterPedidoRequest();
+		
+		var pedidoModel = ObjectCreatorHelper.obterPedido();
+		pedidoModel.setId(1L);
+		
+		when(pedidoJpaRepository.findById(anyInt())).thenReturn(Optional.of(pedidoModel));
+		when(pedidoJpaRepository.save(any())).thenReturn(pedidoModel);
+		
+		var pedido = pedidoService.atualizarPedido(pedidoRequestModel);
+		
+		assertThat(pedido).isNotNull().isInstanceOf(PedidoResponse.class);
+		assertThat(pedido).extracting(PedidoResponse::getNumeroPedido).isEqualTo(pedidoModel.getId());
+		assertThat(pedido.getCliente().getNumero()).isEqualTo(pedidoModel.getCliente().getId());
+		assertThat(pedido.getCliente().getCpf()).isEqualTo(pedidoModel.getCliente().getCpf());
+		assertThat(pedido).extracting(PedidoResponse::getDataPedido).isEqualTo(pedidoModel.getDataPedido().toString());
+		assertThat(pedido).extracting(PedidoResponse::getStatusPedido).isEqualTo(pedidoModel.getStatusPedido().getValue());
+		
+		verify(pedidoJpaRepository, times(1)).findById(anyInt());
+		verify(pedidoJpaRepository, times(1)).save(any());
+	}
+	
+	@Test
 	void deveGerarExcecao_QuandoFizerPedidoFakePara_ClienteQueNaoExistente() {		
 		var pedidoRequestModel = ObjectCreatorHelper.obterPedidoRequest();
 		

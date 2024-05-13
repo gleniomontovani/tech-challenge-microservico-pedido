@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -120,5 +121,26 @@ class PedidoControllerTest {
         .andExpect(jsonPath("$.statusPagamento").value(pedidoResponse.getStatusPagamento()));
 		
 		verify(pedidoService, times(1)).fazerPedidoFake(any(PedidoRequest.class));
+	}
+	
+	@Test
+	void devePermitirAtualizarPedido() throws Exception {
+		var pedidoRequest = ObjectCreatorHelper.obterPedidoRequest();
+		
+		var pedidoResponse = ObjectCreatorHelper.obterPedidoResponse();
+		pedidoResponse.setNumeroPedido(1L);
+		
+		when(pedidoService.atualizarPedido(any(PedidoRequest.class))).thenReturn(pedidoResponse);
+		
+		mockMvc.perform(put("/v1/pedidos")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(Utilitario.asJsonString(pedidoRequest)))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.numeroPedido").value(pedidoResponse.getNumeroPedido()))
+        .andExpect(jsonPath("$.cliente").exists())
+        .andExpect(jsonPath("$.dataPedido").value(pedidoResponse.getDataPedido()))
+        .andExpect(jsonPath("$.statusPedido").value(pedidoResponse.getStatusPedido()));
+		
+		verify(pedidoService, times(1)).atualizarPedido(any(PedidoRequest.class));
 	}
 }
