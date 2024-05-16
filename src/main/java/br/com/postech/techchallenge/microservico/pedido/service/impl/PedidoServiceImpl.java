@@ -12,6 +12,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.postech.techchallenge.microservico.pedido.comum.converts.CategoriaParaInteiroConverter;
 import br.com.postech.techchallenge.microservico.pedido.comum.converts.StatusPedidoParaInteiroConverter;
 import br.com.postech.techchallenge.microservico.pedido.comum.enums.StatusPedidoEnum;
 import br.com.postech.techchallenge.microservico.pedido.comum.util.CpfCnpjUtil;
@@ -26,6 +27,7 @@ import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoRequ
 import br.com.postech.techchallenge.microservico.pedido.model.response.PagamentoResponse;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoProdutoResponse;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoResponse;
+import br.com.postech.techchallenge.microservico.pedido.model.response.ProdutoResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.PedidoJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.ProdutoJpaRepository;
@@ -86,7 +88,11 @@ public class PedidoServiceImpl implements PedidoService {
 	public List<PedidoProdutoResponse> findProdutosByPedido(Integer numeroPedido) throws BusinessException {
 		Pedido pedido = pedidoJpaRepository
 				.findById(numeroPedido)
-				.orElseThrow(() -> new BusinessException("Pedido não encontrado!"));		
+				.orElseThrow(() -> new BusinessException("Pedido não encontrado!"));	
+		
+		MAPPER.typeMap(Produto.class, ProdutoResponse.class)
+		.addMappings(mapperA -> mapperA.using(new CategoriaParaInteiroConverter())
+				.map(Produto::getCategoria, ProdutoResponse::setCategoria));
 		
 		return MAPPER.map(pedido.getProdutos(), new TypeToken<List<PedidoProdutoResponse>>() {}.getType());
 	}
@@ -163,7 +169,7 @@ public class PedidoServiceImpl implements PedidoService {
 			.filter(pedidoProduto -> Objects.nonNull(pedidoProduto.getProduto()) &&
 								     Objects.nonNull(pedidoProduto.getProduto().getId()))
 			.findAny()
-			.orElseThrow(() -> new BusinessException("Produto não cadastrado!"));
+			.orElseThrow(() -> new BusinessException("Produto não encontrado!"));
 
 		//Atribui atualiza lista de pedido_produto.
 		pedido.getProdutos()
@@ -171,8 +177,13 @@ public class PedidoServiceImpl implements PedidoService {
 			.distinct()
 			.forEach(pedidoProduto -> {
 					pedidoProduto.setPedido(pedido);
-					Produto produto = produtoJpaRepository.findById(pedidoProduto.getProduto().getId()).get();
-					pedidoProduto.setProduto(produto);
+					produtoJpaRepository.findById(pedidoProduto.getProduto().getId())
+		            .ifPresentOrElse(
+		                produto -> pedidoProduto.setProduto(produto),
+		                () -> {
+		                    throw new BusinessException("Produto não cadastrado!");
+		                }
+		            );
 			});
 	}
 

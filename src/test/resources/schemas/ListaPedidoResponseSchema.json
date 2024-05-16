@@ -1,0 +1,65 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "required": [
+            "numeroPedido",
+            "numeroPagamento",
+            "cliente",
+            "dataPedido",
+            "statusPedido",
+            "statusPagamento",
+            "qrCodePix"
+        ],
+        "properties": {
+            "numeroPedido": {
+            	"type": [ "number", "null" ]
+	        },
+	        "numeroPagamento": {
+	            "type": [ "number", "null" ]
+	        },
+	        "cliente": {
+	            "type": [ "object", "null" ],
+	            "required": [
+	                "numero",
+	                "nome",
+	                "email",
+	                "cpf",
+	                "status"
+	            ],
+	            "properties": {
+	                "numero": {
+	                    "type": [ "number", "null" ]
+	                },
+	                "nome": {
+	                    "type": [ "string", "null" ]
+	                },
+	                "email": {
+	                    "type": [ "string", "null" ]
+	                },
+	                "cpf": {
+	                    "type": [ "string", "null" ]
+	                },
+	                "status": {
+	                    "type": [ "boolean", "null" ]
+	                }
+	                
+	            }
+	        },
+	        "dataPedido": {
+	            "type": [ "string", "null" ]
+	        },
+	        "statusPedido": {
+	            "type": [ "number", "null" ]
+	        },
+	        "statusPagamento": {
+	            "type": [ "number", "null" ]
+	        },
+	        "qrCodePix": {
+	            "type": [ "string", "null" ]
+	        }
+        }
+    }
+}

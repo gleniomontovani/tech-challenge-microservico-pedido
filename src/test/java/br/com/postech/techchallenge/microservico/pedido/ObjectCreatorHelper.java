@@ -92,6 +92,10 @@ public class ObjectCreatorHelper {
 		return new PedidoRequest(1L, obterClienteRequest(), LocalDateTime.now().toString(), StatusPedidoEnum.RECEBIDO.getValue(), new ArrayList<>());
 	}
 	
+	public static PedidoRequest obterPedidoRequestSemID() {		
+		return new PedidoRequest(null, null, LocalDateTime.now().toString(), StatusPedidoEnum.RECEBIDO.getValue(), Arrays.asList(obterPedidoProdutoRequest()));
+	}
+	
 	public static PedidoRequest obterPedidoRequestProdutoNulo() {		
 		return new PedidoRequest(1L, obterClienteRequest(), LocalDateTime.now().toString(), StatusPedidoEnum.RECEBIDO.getValue(), null);
 	}
@@ -109,7 +113,7 @@ public class ObjectCreatorHelper {
 		return new PagamentoResponse(1L, 1L, LocalDateTime.now().toString(), 1, BigDecimal.valueOf(100), null);
 	}
 			
-	private static PedidoProdutoRequest obterPedidoProdutoRequest() {
+	public static PedidoProdutoRequest obterPedidoProdutoRequest() {
 		return new PedidoProdutoRequest(obterProdutoRequest(), 10);
 	}
 }
