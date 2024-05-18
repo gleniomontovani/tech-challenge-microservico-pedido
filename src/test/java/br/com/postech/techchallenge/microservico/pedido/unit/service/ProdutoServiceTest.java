@@ -1,4 +1,4 @@
-package br.com.postech.techchallenge.microservico.pedido.service;
+package br.com.postech.techchallenge.microservico.pedido.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,6 +22,7 @@ import br.com.postech.techchallenge.microservico.pedido.ObjectCreatorHelper;
 import br.com.postech.techchallenge.microservico.pedido.exception.BusinessException;
 import br.com.postech.techchallenge.microservico.pedido.model.response.ProdutoResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ProdutoJpaRepository;
+import br.com.postech.techchallenge.microservico.pedido.service.ProdutoService;
 import br.com.postech.techchallenge.microservico.pedido.service.impl.ProdutoServiceImpl;
 
 class ProdutoServiceTest {

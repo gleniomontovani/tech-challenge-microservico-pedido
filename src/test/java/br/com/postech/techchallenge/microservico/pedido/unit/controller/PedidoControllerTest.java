@@ -1,4 +1,4 @@
-package br.com.postech.techchallenge.microservico.pedido.controller;
+package br.com.postech.techchallenge.microservico.pedido.unit.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import br.com.postech.techchallenge.microservico.pedido.ObjectCreatorHelper;
 import br.com.postech.techchallenge.microservico.pedido.comum.util.Constantes;
 import br.com.postech.techchallenge.microservico.pedido.comum.util.Utilitario;
+import br.com.postech.techchallenge.microservico.pedido.controller.PedidoController;
 import br.com.postech.techchallenge.microservico.pedido.handler.RestHandlerException;
 import br.com.postech.techchallenge.microservico.pedido.model.request.PedidoRequest;
 import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoResponse;

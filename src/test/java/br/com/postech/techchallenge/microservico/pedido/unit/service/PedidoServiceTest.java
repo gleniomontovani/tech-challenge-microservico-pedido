@@ -1,4 +1,4 @@
-package br.com.postech.techchallenge.microservico.pedido.service;
+package br.com.postech.techchallenge.microservico.pedido.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,6 +27,7 @@ import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoRes
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.PedidoJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.ProdutoJpaRepository;
+import br.com.postech.techchallenge.microservico.pedido.service.PedidoService;
 import br.com.postech.techchallenge.microservico.pedido.service.impl.PedidoServiceImpl;
 import br.com.postech.techchallenge.microservico.pedido.service.integracao.ApiMicroServicePagamento;
 
@@ -210,7 +211,7 @@ class PedidoServiceTest {
 		assertThatThrownBy(
 				() -> pedidoService.fazerPedidoFake(pedidoRequestModel))
 				.isInstanceOf(BusinessException.class)
-				.hasMessage("Produto não cadastrado!");	
+				.hasMessage("Produto não encontrado!");	
 		
 		verify(clienteJpaRepository, times(1)).findByCpfOrNomeOrEmail(anyString(), anyString(), anyString());
 	}

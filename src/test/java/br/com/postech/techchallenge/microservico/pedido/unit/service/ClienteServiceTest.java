@@ -1,4 +1,4 @@
-package br.com.postech.techchallenge.microservico.pedido.service;
+package br.com.postech.techchallenge.microservico.pedido.unit.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,6 +23,7 @@ import br.com.postech.techchallenge.microservico.pedido.comum.util.Constantes;
 import br.com.postech.techchallenge.microservico.pedido.entity.Cliente;
 import br.com.postech.techchallenge.microservico.pedido.model.response.ClienteResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
+import br.com.postech.techchallenge.microservico.pedido.service.ClienteService;
 import br.com.postech.techchallenge.microservico.pedido.service.impl.ClienteServiceImpl;
 
 class ClienteServiceTest {

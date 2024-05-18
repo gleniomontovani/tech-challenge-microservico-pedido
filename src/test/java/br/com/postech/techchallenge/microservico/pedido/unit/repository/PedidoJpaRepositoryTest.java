@@ -1,4 +1,4 @@
-package br.com.postech.techchallenge.microservico.pedido.repository;
+package br.com.postech.techchallenge.microservico.pedido.unit.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import br.com.postech.techchallenge.microservico.pedido.ObjectCreatorHelper;
 import br.com.postech.techchallenge.microservico.pedido.comum.enums.StatusPedidoEnum;
 import br.com.postech.techchallenge.microservico.pedido.entity.Pedido;
+import br.com.postech.techchallenge.microservico.pedido.repository.PedidoJpaRepository;
 
 class PedidoJpaRepositoryTest {
 
