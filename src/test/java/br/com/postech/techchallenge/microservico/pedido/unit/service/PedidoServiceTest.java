@@ -26,6 +26,7 @@ import br.com.postech.techchallenge.microservico.pedido.exception.BusinessExcept
 import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.PedidoJpaRepository;
+import br.com.postech.techchallenge.microservico.pedido.repository.PedidoMongoRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.ProdutoJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.service.PedidoService;
 import br.com.postech.techchallenge.microservico.pedido.service.impl.PedidoServiceImpl;
@@ -41,6 +42,8 @@ class PedidoServiceTest {
 	@Mock
 	private ProdutoJpaRepository produtoJpaRepository;
 	@Mock
+	private PedidoMongoRepository pedidoMongoRepository;
+	@Mock
 	private ApiMicroServicePagamento pagamentoApiService;
 
 	AutoCloseable openMocks;
@@ -48,7 +51,7 @@ class PedidoServiceTest {
 	@BeforeEach
 	void setUp() {
 		openMocks = MockitoAnnotations.openMocks(this);
-		pedidoService = new PedidoServiceImpl(pedidoJpaRepository, clienteJpaRepository, produtoJpaRepository, pagamentoApiService);
+		pedidoService = new PedidoServiceImpl(pedidoJpaRepository, clienteJpaRepository, produtoJpaRepository, pedidoMongoRepository, pagamentoApiService);
 	}
 	
 	@AfterEach

@@ -17,6 +17,7 @@ import br.com.postech.techchallenge.microservico.pedido.comum.converts.StatusPed
 import br.com.postech.techchallenge.microservico.pedido.comum.enums.StatusPedidoEnum;
 import br.com.postech.techchallenge.microservico.pedido.comum.util.CpfCnpjUtil;
 import br.com.postech.techchallenge.microservico.pedido.configuration.ModelMapperConfiguration;
+import br.com.postech.techchallenge.microservico.pedido.domain.PedidoDocumento;
 import br.com.postech.techchallenge.microservico.pedido.entity.Cliente;
 import br.com.postech.techchallenge.microservico.pedido.entity.Pedido;
 import br.com.postech.techchallenge.microservico.pedido.entity.PedidoProduto;
@@ -30,6 +31,7 @@ import br.com.postech.techchallenge.microservico.pedido.model.response.PedidoRes
 import br.com.postech.techchallenge.microservico.pedido.model.response.ProdutoResponse;
 import br.com.postech.techchallenge.microservico.pedido.repository.ClienteJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.PedidoJpaRepository;
+import br.com.postech.techchallenge.microservico.pedido.repository.PedidoMongoRepository;
 import br.com.postech.techchallenge.microservico.pedido.repository.ProdutoJpaRepository;
 import br.com.postech.techchallenge.microservico.pedido.service.PedidoService;
 import br.com.postech.techchallenge.microservico.pedido.service.integracao.ApiMicroServicePagamento;
@@ -45,8 +47,9 @@ public class PedidoServiceImpl implements PedidoService {
 	private final PedidoJpaRepository pedidoJpaRepository;
 	private final ClienteJpaRepository clienteJpaRepository;
 	private final ProdutoJpaRepository produtoJpaRepository;
+	private final PedidoMongoRepository pedidoMongoRepository;
 	private final ApiMicroServicePagamento apiMicroServicePagamento;
-
+	
 	@Override
 	public List<PedidoResponse> findTodosPedidosAtivos()throws BusinessException{
 		List<Pedido> pedidos = pedidoJpaRepository
@@ -68,20 +71,24 @@ public class PedidoServiceImpl implements PedidoService {
 	}
 
 	@Override
-	public PedidoResponse findById(Integer id) throws BusinessException{		
-		Pedido pedido = pedidoJpaRepository
-				.findById(id)
-				.orElseThrow(() -> new BusinessException("Pedido não encontrado!"));
+	public PedidoResponse findById(Integer id) throws BusinessException{	
+		var pedidoDocumento = pedidoMongoRepository.findByNumeroPedido(id.longValue());
+		if (!pedidoDocumento.isPresent()) {
+			Pedido pedido = pedidoJpaRepository
+					.findById(id)
+					.orElseThrow(() -> new BusinessException("Pedido não encontrado!"));
+			
+			MAPPER.typeMap(Pedido.class, PedidoResponse.class)
+				.addMappings(mapperA -> mapperA
+						.using(new StatusPedidoParaInteiroConverter())
+							.map(Pedido::getStatusPedido, PedidoResponse::setStatusPedido))
+				.addMappings(mapperB -> {
+					  mapperB.map(src -> src.getId(),PedidoResponse::setNumeroPedido);
+			});
+			return MAPPER.map(pedido, PedidoResponse.class);
+		}
 		
-		MAPPER.typeMap(Pedido.class, PedidoResponse.class)
-			.addMappings(mapperA -> mapperA
-					.using(new StatusPedidoParaInteiroConverter())
-						.map(Pedido::getStatusPedido, PedidoResponse::setStatusPedido))
-			.addMappings(mapperB -> {
-				  mapperB.map(src -> src.getId(),PedidoResponse::setNumeroPedido);
-		});
-
-		return MAPPER.map(pedido, PedidoResponse.class);
+		return MAPPER.map(pedidoDocumento, PedidoResponse.class);
 	}
 	
 	@Override
@@ -138,6 +145,10 @@ public class PedidoServiceImpl implements PedidoService {
 		pedidoResponse.setStatusPagamento(response.getStatusPagamento());
 		pedidoResponse.setQrCodePix(response.getQrCodePix());
 		
+		var pedidoDocumento = MAPPER.map(pedidoResponse, PedidoDocumento.class);
+		
+		pedidoMongoRepository.save(pedidoDocumento);
+		
 		return pedidoResponse;
 	}
 	
@@ -158,7 +169,7 @@ public class PedidoServiceImpl implements PedidoService {
 				  mapper.map(src -> src.getId(),PedidoResponse::setNumeroPedido);
 		});
 		
-		return MAPPER.map(pedido, PedidoResponse.class);
+		return updatePedidoDocumento(pedido, pedidoRequest); 
 	}
 
 	private void valideProduto(Pedido pedido)  throws BusinessException{
@@ -198,5 +209,19 @@ public class PedidoServiceImpl implements PedidoService {
 
 			pedido.setCliente(cliente);
 		}
+	}
+	
+	private PedidoResponse updatePedidoDocumento(Pedido pedido, PedidoRequest pedidoRequest) {
+		var pedidoDoc = pedidoMongoRepository.findByNumeroPedido(pedidoRequest.numeroPedido());
+		if(pedidoDoc.isPresent()) {
+			var pedidoDocumento = pedidoDoc.get();
+			pedidoDocumento.setStatusPedido(pedidoRequest.statusPedido());
+			
+			pedidoDocumento = pedidoMongoRepository.save(pedidoDocumento);
+			
+			return MAPPER.map(pedidoDocumento, PedidoResponse.class);
+		}
+		
+		return MAPPER.map(pedido, PedidoResponse.class);
 	}
 }
