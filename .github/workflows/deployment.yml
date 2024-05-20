@@ -1,0 +1,87 @@
+ name: Build and Deploy API
+
+ on:
+   pull_request:
+      branches: [main]
+      
+ jobs:            
+   build:
+     runs-on: ubuntu-latest
+     name: Build the aplication
+     steps:       
+       - name: Checkout Code
+         uses: actions/checkout@v3
+         
+       - name: Setup Java
+         uses: actions/setup-java@v3
+         with:
+           distribution: 'temurin'
+           java-version: '17'
+
+       - name: Build Project
+         run: mvn clean install -DskipTests
+
+       - name: Login Docker Hub
+         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+       - name: Build Docker Image
+         run: docker build --build-arg DB_ENDPOINT=$RDS_ENDPOINT -t ${{ secrets.DOCKER_IMAGE }} .
+
+       - name: Push Image Docker
+         run: docker push ${{ secrets.DOCKER_IMAGE }}
+
+   sonarqube:
+     name: SonarQube Integration
+     runs-on: ubuntu-latest
+    
+     steps:
+      - uses: actions/checkout@v2
+        with:
+         # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} //Sonar Token generated 
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}    
+
+   deploy:
+     runs-on: ubuntu-latest
+     name: Deployment the aplication
+     steps: 
+       - name: Set Up AWS Credentials
+         uses: aws-actions/configure-aws-credentials@v1
+         with:
+           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+           aws-region: ${{ secrets.AWS_DEFAULT_REGION }} 
+          
+       - name: Checkout Repository
+         uses: actions/checkout@v3       
+
+       - name: Install kubectl
+         run: |
+           curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+           chmod +x ./kubectl
+           sudo mv ./kubectl /usr/local/bin/kubectl
+
+       - name: Update EKS Kubeconfig
+         run: |
+           aws eks --region ${{ secrets.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ secrets.CLUSTER_NAME_EKS }}
+
+       - name: Apply Kubernetes Configuration
+         run: |
+           find k8s -name "*.yaml" -exec kubectl apply -f {} \;
+       
+       - name: Get Load Balancer URL
+         run: |
+           kubectl get service ${{ secrets.KUBERNETES_SERVICES }} -o=jsonpath='{.spec.clusterIP}' > endpoint_client.txt
+
+       - name: Upload File to S3
+         run: |
+           aws s3 cp endpoint_client.txt s3://${{ secrets.AWS_BUCKET }}/${{ secrets.AWS_S3_BUCKET_SOURCE_APP }}/endpoint_client --acl private
+           rm -r endpoint_client.txt
+         env:
+           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}  
